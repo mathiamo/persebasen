@@ -1,0 +1,22 @@
+[
+  {
+    "record_type":1500,
+    "elapsed_time":239
+  },
+  {
+    "record_type":3000,
+    "elapsed_time":506
+  },
+  {
+    "record_type":5000,
+    "elapsed_time":868
+  },
+  {
+    "record_type":10000,
+    "elapsed_time":1830
+  },
+  {
+    "record_type":21097,
+    "elapsed_time":4071
+  }
+]
