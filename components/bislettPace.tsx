@@ -13,6 +13,13 @@ const RunningPaceCalculator: React.FC = () => {
   const [distance, setDistance] = useState<DistanceOption>({ label: "1 runde", value: 546 });
   const [time, setTime] = useState<string>("00:00");
 
+  const numberOfRounds = 10;
+
+  const menuItems = Array.from({ length: numberOfRounds }, (_, index) => (
+      <MenuItem key={index} value={546 * (index + 1)}>
+        {`${index + 1} runde${index === 0 ? '' : 'r'}`}
+      </MenuItem>
+  ));
   const handleDistanceChange = (event: SelectChangeEvent<unknown>) => {
 
     const value = parseInt(event.target.value as string);
@@ -62,20 +69,12 @@ const RunningPaceCalculator: React.FC = () => {
           <Select
             labelId="distance-select-label"
             id="distance-select"
-            value={distance.value}
+            value= { distance.value!}
             label={'Distance'}
             onChange={handleDistanceChange}
           >
-            <MenuItem value={546}>1 runde</MenuItem>
-            <MenuItem value={546 * 2}>2 runder</MenuItem>
-            <MenuItem value={546 * 3}>3 runder</MenuItem>
-            <MenuItem value={546 * 4}>4 runder</MenuItem>
-            <MenuItem value={546 * 5}>5 runder</MenuItem>
-            <MenuItem value={546 * 6}>6 runder</MenuItem>
-            <MenuItem value={546 * 7}>7 runder</MenuItem>
-            <MenuItem value={546 * 8}>8 runder</MenuItem>
-            <MenuItem value={546 * 9}>9 runder</MenuItem>
-            <MenuItem value={546 * 10}>10 runder</MenuItem>
+
+            {menuItems}
           </Select>
         </FormControl>
         <TextField

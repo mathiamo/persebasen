@@ -6,15 +6,6 @@ import {mapPersonalBests} from "./api/stravaPRConverter";
 import {compareRunTime} from "../utils/compare.util";
 import Head from "next/head";
 
-// async function getPrsFromStravaAsync() {
-//   try {
-//     let response = await fetch('/api/proxy?url=https://strava.com/athletes/542199/prs' );
-//     return await response.json();
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-
 export default function Home() {
   const [runners, setRunners] = useState<Runner[]>([]);
 
@@ -27,10 +18,9 @@ export default function Home() {
       setRunners((runners: Runner[]) => [...runners, mapPersonalBests()])
 
     }
-    // getPrsFromStravaAsync().then(r => console.log(r));
 
     fetchData().then(() => console.log(runners));
-  }, []);
+  }, [runners]);
 
   const columns = [
     { field: 'name', headerName: 'Name', flex: 1 },

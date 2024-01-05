@@ -22,7 +22,7 @@ export function mapPersonalBests(): Runner {
     date: new Date()
   }));
   return {
-    id: faker.datatype.uuid(),
+    id: faker.string.uuid(),
     name: "Mathias Moen",
     age: 35,
     personalBests: personalBests
