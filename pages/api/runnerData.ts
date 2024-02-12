@@ -1,40 +1,69 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import {readableRunTime} from "../../utils/strings.util";
+import {Runner} from "../../models/runner"
 
-function generateRunner() {
+const runners = Array.from({length: 50}).map(() => generateRunner());
+
+export const fetchRunners = async (query = ""): Promise<Runner[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log("Fetched runners");
+
+  const filteredRunners = runners.filter((runner) =>
+    runner.name.toLowerCase().includes(query.toLowerCase())
+  )
+
+  return [...filteredRunners]
+}
+
+export const addRunner = async (runner: Pick<Runner, "name">): Promise<Runner> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  const newRunner = generateRunner()
+  newRunner.name = runner.name
+
+  runners.unshift(newRunner)
+  return newRunner;
+}
+export const removeRunner = async (id: string): Promise<void> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const index = runners.findIndex((runner) => runner.id === id);
+  runners.splice(index, 1);
+}
+
+function generateRunner(): Runner {
   const distances = [
-    { value: 1500, unit: 'meters' },
-    { value: 3000, unit: 'meters' },
-    { value: 5000, unit: 'meters' },
-    { value: 10000, unit: 'meters' },
-    { value: 21097, unit: 'meters' },
-    { value: 42195, unit: 'meters' },
+    {value: 1500, unit: 'meters'},
+    {value: 3000, unit: 'meters'},
+    {value: 5000, unit: 'meters'},
+    {value: 10000, unit: 'meters'},
+    {value: 21097, unit: 'meters'},
+    {value: 42195, unit: 'meters'},
   ];
 
   const checkDistance = (distance: any) => {
-    if(distance.value === 1500) {
-      return faker.datatype.number({ min: 205, max: 360 });
+    if (distance.value === 1500) {
+      return faker.datatype.number({min: 205, max: 360});
     } else if (distance.value === 3000) {
-      return faker.datatype.number({ min: 435, max: 720 });
+      return faker.datatype.number({min: 435, max: 720});
     } else if (distance.value === 5000) {
-      return faker.datatype.number({ min: 750, max: 1200 });
-    }else if (distance.value === 10000) {
-      return faker.datatype.number({ min: 1540, max: 2400 });
-    }else if (distance.value === 21097) {
-      return faker.datatype.number({ min: 3500, max: 6900 });
-    }else if (distance.value === 42195) {
-      return faker.datatype.number({ min: 7100, max: 9600 });
+      return faker.datatype.number({min: 750, max: 1200});
+    } else if (distance.value === 10000) {
+      return faker.datatype.number({min: 1540, max: 2400});
+    } else if (distance.value === 21097) {
+      return faker.datatype.number({min: 3500, max: 6900});
+    } else if (distance.value === 42195) {
+      return faker.datatype.number({min: 7100, max: 9600});
     } else {
       return 0;
     }
   }
-  const personalBests = Array.from({ length: distances.length })
+  const personalBests = Array.from({length: distances.length})
     .map((value, index) => {
       const distance = distances[index];
       const timeInSeconds = checkDistance(distance);
-      const date = faker.date.past();
+      const date = faker.date.past() as Date;
 
-     return {
+      return {
         distance,
         time: {
           hours: Math.floor(timeInSeconds / 3600) ? Math.floor(timeInSeconds / 3600) : '',
@@ -43,19 +72,20 @@ function generateRunner() {
         },
         timeString: readableRunTime(timeInSeconds),
         location: faker.address.city(),
-        date: date.toISOString().slice(0, 10),
+        date,
       };
-  });
+    });
 
   return {
     id: faker.datatype.uuid(),
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-    age: faker.datatype.number({ min: 18, max: 40 }),
+    age: faker.datatype.number({min: 18, max: 40}),
+    image: faker.image.avatar(),
     personalBests,
   };
 }
 
 export default function handler(req: any, res: any) {
-  let runners = Array.from({ length: 50 }).map(() => generateRunner());
+  let runners = Array.from({length: 50}).map(() => generateRunner());
   res.status(200).json(runners);
 }

@@ -6,10 +6,14 @@ import '@fontsource/roboto/700.css';
 import type { AppProps } from 'next/app'
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 export default function App({ Component, pageProps }: AppProps) {
+  const queryClient = new QueryClient();
   return (
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <Component {...pageProps} />
-  </LocalizationProvider>
+    <QueryClientProvider client={queryClient}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Component {...pageProps} />
+      </LocalizationProvider>
+    </QueryClientProvider>
   )
 }

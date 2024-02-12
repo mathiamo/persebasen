@@ -1,45 +1,67 @@
-import {Avatar, Card, CardContent, CardHeader, Grid} from "@mui/material";
+import {Avatar, Button, Card, CardContent, CardHeader, Grid} from "@mui/material";
 import styles from "./runnerCard.module.scss";
-export const RunnerCard = () => {
-    return (
-        <>
-          <Card variant="outlined">
-            <CardHeader avatar={<Avatar src="mathias.jpg" alt="me"/>} title={"Mathias Moen"}>
-            </CardHeader>
-            <CardContent>
-              <Grid container spacing={2} className={styles.runnerStats}>
-                  <Grid item xs={3}>
+import {Runner} from "../models/runner";
+
+export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () => void }) => {
+  function getPbTime(distance: Number) {
+    return runner.personalBests.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
+  }
+
+  const handleDelete = () => {
+    onDelete();
+  };
+  return (
+    <Card variant="outlined">
+      <CardHeader avatar={
+        <Avatar src={runner.image} alt={"image of " + runner.name}/>} title={runner.name}>
+      </CardHeader>
+
+      <CardContent>
+        {runner &&
+            <Grid container spacing={2} className={styles.runnerStats}>
+                <Grid item xs={3}>
                     1500m
-                  </Grid>
-                  <Grid item xs={9}>
-                    3:59
-                  </Grid>
-
-                <Grid item xs={3}>
-                  3000m
                 </Grid>
                 <Grid item xs={9}>
-                  8:26
+                  {getPbTime(1500)}
                 </Grid>
 
                 <Grid item xs={3}>
-                  5000m
+                    3000m
                 </Grid>
                 <Grid item xs={9}>
-                  14:28
+                  {getPbTime(3000)}
                 </Grid>
 
                 <Grid item xs={3}>
-                  10 000m
+                    5000m
                 </Grid>
                 <Grid item xs={9}>
-                  30:50
+                  {getPbTime(5000)}
                 </Grid>
-              </Grid>
-            </CardContent>
 
-          </Card>
-        </>
-    );
+                <Grid item xs={3}>
+                    10 000m
+                </Grid>
+                <Grid item xs={9}>
+                  {getPbTime(10000)}
+                </Grid>
+                <Grid item xs={3}>
+                    Halvmaraton
+                </Grid>
+                <Grid item xs={9}>
+                  {getPbTime(21097)}
+                </Grid>
+            </Grid>
+        }
+        <Grid container justifyContent="flex-end">
+          <Button variant="contained" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Grid>
+
+      </CardContent>
+    </Card>
+  );
 };
 
