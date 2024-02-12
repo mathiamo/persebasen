@@ -1,7 +1,20 @@
 import React, { useState } from "react";
-import {TextField, Select, MenuItem, FormControl, InputLabel, Typography, Grid, SelectChangeEvent} from "@mui/material";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Typography,
+  Grid,
+  SelectChangeEvent,
+  IconButton
+} from "@mui/material";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import Button from "@mui/material/Button";
+import {ContentCopy} from "@mui/icons-material";
+import {copyTextToClipboard} from "../utils/strings.util";
 dayjs.extend(duration);
 
 interface DistanceOption {
@@ -12,16 +25,10 @@ interface DistanceOption {
 const RunningPaceCalculator: React.FC = () => {
   const [distance, setDistance] = useState<DistanceOption>({ label: "1 runde", value: 546 });
   const [time, setTime] = useState<string>("00:00");
+  const [paceString, setPaceString] = useState<string>("");
+  const [timeString, setTimeString] = useState<string>("");
 
-  const numberOfRounds = 10;
-
-  const menuItems = Array.from({ length: numberOfRounds }, (_, index) => (
-      <MenuItem key={index} value={546 * (index + 1)}>
-        {`${index + 1} runde${index === 0 ? '' : 'r'}`}
-      </MenuItem>
-  ));
   const handleDistanceChange = (event: SelectChangeEvent<unknown>) => {
-
     const value = parseInt(event.target.value as string);
     const label = `${value}m`;
     setDistance({ label, value });
@@ -31,6 +38,19 @@ const RunningPaceCalculator: React.FC = () => {
     setTime(event.target.value);
     calculatePace()
   };
+ const timeisEmpty = (t: string) => {
+    return t === "00:00";
+ }
+  const handleTimestringChange = () => {
+    if(!timeisEmpty(time)) {
+      setPaceString(timestring => {
+        return timestring.length === 0 ? calculatePace() : timestring + " - " + calculatePace();
+      });
+      setTimeString(timestring => {
+        return timestring.length === 0 ? time : timestring + " - " + time;
+      });
+    }
+  }
 
   const calculatePace = () => {
     const timeArray = time.split(":");
@@ -50,8 +70,20 @@ const RunningPaceCalculator: React.FC = () => {
       paceMinutes += 1;
       paceSeconds = 0;
     }
-    return `${paceMinutes}:${paceSeconds < 10 ? '0' : ''}${paceSeconds} min/km`;
+    if(paceMinutes === 0 && paceSeconds === 0) {
+        return "";
+    }
+    return `${paceMinutes}:${paceSeconds < 10 ? '0' : ''}${paceSeconds}`;
   };
+
+  const setMenuItems = (numberOfMenuItems: number) => {
+    const menuItems = [];
+    for (let i = 1; i <= numberOfMenuItems; i++) {
+      menuItems.push(<MenuItem key={i} value={i * 546}>{i} {i === 1 ? 'runde' : 'runder'}</MenuItem>);
+    }
+
+    return menuItems;
+  }
 
   return (
     <Grid
@@ -61,7 +93,7 @@ const RunningPaceCalculator: React.FC = () => {
       alignItems="center">
       <Grid>
         <Typography variant="h5" gutterBottom sx={{marginBottom: 2}}>
-          Bislett rundekalkulator
+          Bislett rundetider
         </Typography>
 
         <FormControl>
@@ -69,12 +101,11 @@ const RunningPaceCalculator: React.FC = () => {
           <Select
             labelId="distance-select-label"
             id="distance-select"
-            value= { distance.value!}
+            value={distance.value}
             label={'Distance'}
             onChange={handleDistanceChange}
           >
-
-            {menuItems}
+            {setMenuItems(10)}
           </Select>
         </FormControl>
         <TextField
@@ -90,9 +121,24 @@ const RunningPaceCalculator: React.FC = () => {
           sx={{ marginLeft: 2 }}
           onChange={handleTimeChange}
         />
-        <Typography variant="h6" sx={{ marginTop: 2 }}>
-          {calculatePace()}
-        </Typography>
+        <Button variant="contained" sx= {{marginLeft: 2}} onClick={handleTimestringChange}>Legg til</Button>
+        {timeString &&
+            <Grid sx={{display: 'flex', flexDirection: 'column'}}>
+                <Typography variant="h6" sx={{ marginTop: 2 }}>
+                  {calculatePace() + " min/km"}
+                </Typography>
+                <Typography variant="caption" sx={{ marginTop: 2 }}>
+                  {timeString}
+                </Typography>
+                <Typography variant="caption" sx={{ marginTop: 2, maxWidth: 100 }}>
+                  {paceString}
+                    <IconButton size="small" onClick={() => copyTextToClipboard(paceString)}>
+                        <ContentCopy />
+                    </IconButton>
+                </Typography>
+            </Grid>
+        }
+
       </Grid>
     </Grid>
   );
