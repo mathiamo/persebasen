@@ -1,8 +1,8 @@
 import {faker} from '@faker-js/faker';
 import {readableRunTime} from "../../utils/strings.util";
-import {Runner} from "../../models/runner"
+import {PersonalBest, Runner, RunnerCreate, Time} from "../../models/runner"
 
-const runners = Array.from({length: 50}).map(() => generateRunner());
+const runners = Array.from({length: 5}).map(() => generateRunner());
 
 export const fetchRunners = async (query = ""): Promise<Runner[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -14,15 +14,17 @@ export const fetchRunners = async (query = ""): Promise<Runner[]> => {
 
   return [...filteredRunners]
 }
-
-export const addRunner = async (runner: Pick<Runner, "name">): Promise<Runner> => {
+export const addRunner = async (createdRunner: RunnerCreate): Promise<Runner> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const newRunner = generateRunner()
-  newRunner.name = runner.name
-
-  runners.unshift(newRunner)
-  return newRunner;
+  const runner: Runner = {
+    id: faker.datatype.uuid(),
+    name: createdRunner.name,
+    age: createdRunner.age,
+    personalBests: createdRunner.personalBests
+  }
+  runners.unshift(runner)
+  return runner;
 }
 export const removeRunner = async (id: string): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -61,7 +63,7 @@ function generateRunner(): Runner {
     .map((value, index) => {
       const distance = distances[index];
       const timeInSeconds = checkDistance(distance);
-      const date = faker.date.past() as Date;
+      const date = faker.date.past();
 
       return {
         distance,
@@ -81,11 +83,11 @@ function generateRunner(): Runner {
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     age: faker.datatype.number({min: 18, max: 40}),
     image: faker.image.avatar(),
-    personalBests,
+    personalBests: personalBests as PersonalBest[],
   };
 }
 
 export default function handler(req: any, res: any) {
-  let runners = Array.from({length: 50}).map(() => generateRunner());
+  let runners = Array.from({length: 4}).map(() => generateRunner());
   res.status(200).json(runners);
 }

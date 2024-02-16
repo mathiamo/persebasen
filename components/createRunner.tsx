@@ -1,57 +1,55 @@
 import React from 'react';
-import {Distance, Runner} from '../models/runner';
+import {Distance, PersonalBest, Runner, RunnerCreate, Time} from '../models/runner';
 import {Controller, SubmitHandler, useFieldArray, useForm} from 'react-hook-form';
 import {Button, Grid, MenuItem, Select, TextField} from '@mui/material';
 import {z} from 'zod';
 import {zodResolver} from "@hookform/resolvers/zod";
+import {addRunner} from "../pages/api/runnerData";
+import {faker} from "@faker-js/faker";
+import {readableRunTime} from "../utils/strings.util";
+import {calculateTimeInSeconds} from "../utils/time.util";
+import {HorizontalRule} from "@mui/icons-material";
+import {defaultDistances} from "../utils/running.util";
 
-interface Props {
-  onCreateRunner: (runner: Runner) => Runner;
+interface CreateRunnerFormProps {
+  onSubmitSuccess: (data: RunnerCreate) => void;
 }
 
 
 // Define the Zod schema for personal best
 const personalBestSchema = z.object({
   distance: z.object({
-    value: z.number().int().positive().nullable(),
+    value: z.number().int().positive(),
     unit: z.string(),
   }),
   time: z.object({
-    seconds: z.number().int().positive().nullable(),
-    minutes: z.number().int().positive().nullable(),
-    hours: z.number().int().positive().nullable(),
-    hundredths: z.number().int().positive().nullable(),
+    seconds: z.number().int().nonnegative(),
+    minutes: z.number().int().nonnegative(),
+    hours: z.number().int().nonnegative(),
+    hundredths: z.number().int().nonnegative(),
   }),
-  timeString: z.string(),
-  location: z.string(),
-  date: z.date().nullable(),
+  timeString: z.string().nullable(),
+  location: z.string().nullable(),
+  date: z.coerce.date().nullable(),
 });
 const schema = z.object({
   name: z.string().min(2, "Navn må ha flere enn 2 bokstaver").max(60, "maksgrensen for navn er 60 tegn"),
   age: z.number().int().positive().min(0).max(99),
-  image: z.string().url(),
   personalBests: z.array(personalBestSchema),
 })
 
-type CreateRunnerFormFields = z.infer<typeof schema>;
+export type CreateRunnerFormFields = z.infer<typeof schema>;
 
-const CreateRunner = () => {
+const CreateRunner: React.FC<CreateRunnerFormProps> = ({ onSubmitSuccess }) => {
 
-  const defaultDistances: Distance[] = [
-    {value: 1500, unit: "meters"},
-    {value: 3000, unit: "meters"},
-    {value: 5000, unit: "meters"},
-    {value: 10000, unit: "meters"},
-    {value: 21097, unit: "meters"},
-    {value: 42195, unit: "meters"},
-  ];
+
 
   const {
     register,
     handleSubmit,
     setError,
     control,
-    formState: {isSubmitSuccessful, errors, isSubmitting},
+    formState: {errors, isSubmitting, },
   } = useForm<CreateRunnerFormFields>({
     resolver: zodResolver(schema),
   });
@@ -61,10 +59,13 @@ const CreateRunner = () => {
     name: 'personalBests',
   });
   const handleAddPersonalBest = () => {
+    const usedDistanceValues = new Set(fields.map((pb) => pb.distance.value));
+    const nextFreeDistance = defaultDistances.find((dist) => !usedDistanceValues.has(dist.value));
+
     append({
       distance: {
-        value: null, // Provide a default value, or adjust as needed
-        unit: 'meters', // Provide a default value, or adjust as needed
+        value: nextFreeDistance ? nextFreeDistance.value : 0,
+        unit: 'meters',
       },
       time: {
         seconds: 0,
@@ -80,16 +81,35 @@ const CreateRunner = () => {
 
 
   const onSubmit: SubmitHandler<CreateRunnerFormFields> = async (data) => {
-    console.log(data)
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(data)
+      console.log(data);
+
+      const pbs: PersonalBest[] =
+          data.personalBests.map( (pb) => ({
+                distance: {
+                  value: pb.distance.value,
+                  unit: pb.distance.unit,
+                },
+                date: pb.date,
+                time: pb.time,
+                location: pb.location,
+                timeString: readableRunTime(calculateTimeInSeconds(pb.time)),
+              })
+      )
+
+      onSubmitSuccess({
+        name: data.name,
+        age: data.age,
+        personalBests: pbs,
+      });
     } catch (error) {
       setError("name", {
         message: "Navn allerede brukt",
-      })
+      });
     }
-  }
+  };
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -104,29 +124,38 @@ const CreateRunner = () => {
           })} fullWidth/>
           {errors.age && <div>{errors.age.message}</div>}
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField label="Image" {...register("image")} fullWidth/>
-        </Grid>
+
         {/* Personal Bests Section */}
         <Grid item xs={12}>
-          <h2>Personal Bests</h2>
+
+          <Button variant="contained" type="button" onClick={handleAddPersonalBest} style={{ marginBottom: '16px' }} >
+            Add Personal Best
+          </Button>
 
           {fields.map((personalBest, index) => (
-            <><Grid item xs={2}>
-              <Controller
-                name={`personalBests.${index}.distance.value`}
-                control={control}
-                render={({field}) => (
-                  <Select {...field} label="Distance" fullWidth>
-                    {defaultDistances.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.value + ' ' + option.unit}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
-              />
-            </Grid><Grid container spacing={2} key={index}>
+
+            <Grid key={index} container spacing={3} alignItems="center" style={{ marginTop: '16px' }} >
+
+              <Grid item xs={4}>
+                <Controller
+                    name={`personalBests.${index}.distance.value`}
+                    control={control}
+                    render={({ field }) => (
+                        <Select
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            label="Distance"
+                            fullWidth
+                        >
+                          {defaultDistances.map((option) => (
+                              <MenuItem key={option.value} value={option.value?.toString()}>
+                                {option.value + ' ' + option.unit}
+                              </MenuItem>
+                          ))}
+                        </Select>
+                    )}
+                />
+              </Grid>
               <Grid item xs={2}>
                 <TextField
                   label="Hours" type="number"
@@ -167,8 +196,7 @@ const CreateRunner = () => {
                   fullWidth/>
                 <span>{errors?.personalBests?.[index]?.time?.hundredths?.message}</span>
               </Grid>
-
-              <Grid item xs={2}>
+              <Grid item xs={4}>
                 <TextField
                   label="Løp"
                   key={personalBest.id}
@@ -177,31 +205,26 @@ const CreateRunner = () => {
 
                 <span>{errors?.personalBests?.[index]?.location?.message}</span>
               </Grid>
-
-              <Grid item xs={2}>
+              <Grid item xs={4}>
                 <TextField
                   label="Dato"
+                  type="date"
                   key={personalBest.id}
                   {...register(`personalBests.${index}.date`)}
                   fullWidth/>
                 <span>{errors?.personalBests?.[index]?.date?.message}</span>
               </Grid>
-
-              <Grid item xs={2}>
-                <Button variant="outlined" type="button" onClick={() => remove(index)}>
-                  Remove Personal Best
+              <Grid item xs={4}>
+                <Button variant="text" onClick={() => remove(index)}>
+                  Remove
                 </Button>
               </Grid>
-            </Grid></>
+            </Grid>
           ))}
-          <Button variant="contained" type="button" onClick={handleAddPersonalBest}>
-            Add Personal Best
-          </Button>
         </Grid>
 
-
         <Grid item xs={12}>
-          <Button disabled={isSubmitting} type="submit" variant="outlined" color="primary" fullWidth>
+          <Button variant="contained" disabled={isSubmitting} type="submit"  color="primary" fullWidth style={{ marginTop: '16px' }}>
             {isSubmitting ? "Creating..." : "Create"}
           </Button>
         </Grid>

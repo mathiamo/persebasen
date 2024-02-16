@@ -9,9 +9,8 @@ import Link from "next/link";
 import React from "react";
 
 const pages = [
-  {key: 'bislettkalkulator', name: 'Bislettkalkulator'},
-  {key: 'opprettloper', name: 'Opprett Løper'},
-  {key: 'runners', name: 'Løpere'},
+    {key: 'runners', name: 'Løpertabell'},
+    {key: 'bislettkalkulator', name: 'Bislettkalkulator'},
 ];
 
 function Header() {

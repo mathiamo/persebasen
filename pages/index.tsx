@@ -1,54 +1,71 @@
-import styles from '../public/styles/Home.module.css'
-import React from "react";
-import {Runner} from "../models/runner";
-import {DataGrid} from '@mui/x-data-grid';
-import {compareRunTime} from "../utils/compare.util";
-import Head from "next/head";
+
+import React, {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
-import {fetchRunners} from "./api/runnerData";
+import {fetchRunners, removeRunner} from "./api/runnerData";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Dialog, DialogContent, Fab, Grid, Icon} from "@mui/material";
+import Opprettloper from "./opprettloper";
+import {RunnerCard} from "../components/runnerCard";
+import {Add} from "@mui/icons-material";
 
 export default function Home() {
 
+  const queryCache = useQueryClient()
+
+  const [name, setName] = useState("");
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const {data: runners, isLoading} = useQuery({
-    queryFn: () => fetchRunners(""),
-    queryKey: ["runners"]
+    queryFn: () => fetchRunners(search),
+    queryKey: ["runners", {search}]
   });
 
-  const columns = [
-    {field: 'name', headerName: 'Name', flex: 1},
-    {field: 'age', headerName: 'Age', type: 'number', flex: 1},
-    {field: '1500', headerName: '1500m', flex: 1, sortComparator: compareRunTime},
-    {field: '3000', headerName: '3000m', flex: 1, sortComparator: compareRunTime,},
-    {field: '5000', headerName: '5000m', flex: 1, sortComparator: compareRunTime,},
-    {field: '10000', headerName: '10000m', flex: 1, sortComparator: compareRunTime,},
-    {field: '21097', headerName: '21097m', flex: 1, sortComparator: compareRunTime,},
-    {field: '42195', headerName: '42195', width: 120, sortComparator: compareRunTime,},
-  ];
 
-  const rows = runners?.map((runner: Runner) => ({
-    id: runner.id,
-    name: runner.name,
-    age: runner.age,
-    "1500": runner.personalBests[0]?.timeString,
-    "3000": runner.personalBests[1]?.timeString,
-    "5000": runner.personalBests[2]?.timeString,
-    "10000": runner.personalBests[3]?.timeString,
-    "21097": runner.personalBests[4]?.timeString,
-    "42195": runner.personalBests[5]?.timeString
-  })) ?? []
+
+  const {mutateAsync: removeRunnerMutation} = useMutation({
+    mutationFn: removeRunner,
+    onSuccess: () => {
+      queryCache.invalidateQueries({queryKey: ['runners']})
+    }
+  });
+
 
   if (isLoading) {
     return <div>Loading...</div>
   }
-  return (
-    <>
 
-      <Head>
-        <title>Persebasen</title>
-      </Head>
-      <main className={styles.main}>
-        <DataGrid rows={rows} columns={columns} pageSize={20} style={{height: 600, width: '100%'}}/>
-      </main>
-    </>
+  return (
+      <>
+        <Fab
+            color="primary"
+            aria-label="add"
+            style={{ position: "fixed", bottom: 16, right: 16 }}
+            onClick={handleOpen}
+        >
+          <Add />
+        </Fab>
+        <Dialog open={open} onClose={handleClose} >
+          <DialogContent>
+            <Opprettloper onClose={handleClose}/>
+          </DialogContent>
+        </Dialog>
+        <Grid sx={{p: 2}} container spacing={2}>
+          {runners?.map((runner) => (
+              <Grid item xs={4} key={runner.id}>
+                <RunnerCard runner={runner} onDelete={() => removeRunnerMutation(runner.id)}></RunnerCard>
+              </Grid>
+          ))}
+        </Grid>
+      </>
+
+
   )
 }

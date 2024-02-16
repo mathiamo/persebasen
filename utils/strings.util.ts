@@ -1,4 +1,4 @@
-export const readableRunTime = (timeInSeconds: any) => {
+export const readableRunTime = (timeInSeconds: number) => {
   if(timeInSeconds > 5399) {
     return Math.floor(timeInSeconds / 3600) + ':'
         + ((Math.floor((timeInSeconds % 3600) / 60) >= 10)
