@@ -1,7 +1,7 @@
-// api/create-runner.ts
+// api/create.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../lib/prisma';
-import {PersonalBest} from "../../models/runner";
+import prisma from '../../../lib/prisma';
+import {PersonalBest} from "../../../models/runner";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
