@@ -12,7 +12,6 @@ export default function Home() {
 
   const queryCache = useQueryClient()
 
-  const [name, setName] = useState("");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -28,15 +27,12 @@ export default function Home() {
     queryKey: ["runners", {search}]
   });
 
-
-
   const {mutateAsync: removeRunnerMutation} = useMutation({
     mutationFn: removeRunner,
     onSuccess: () => {
       queryCache.invalidateQueries({queryKey: ['runners']})
     }
   });
-
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -65,7 +61,5 @@ export default function Home() {
           ))}
         </Grid>
       </>
-
-
   )
 }

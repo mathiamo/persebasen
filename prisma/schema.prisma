@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Runner {
+  id            Int            @id @default(autoincrement())
+  name          String
+  age           Int
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  personalBests PersonalBest[]
+}
+
+model PersonalBest {
+  id         Int       @id @default(autoincrement())
+  distance   Distance  @relation(fields: [distanceId], references: [id])
+  time       Time      @relation(fields: [timeId], references: [id])
+  timeString String?
+  location   String?
+  date       DateTime?
+  runner     Runner    @relation(fields: [runnerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  runnerId   Int
+  distanceId Int
+  timeId     Int
+}
+
+model Distance {
+  id           Int            @id @default(autoincrement())
+  value        Int
+  unit         String
+  PersonalBest PersonalBest[]
+}
+
+model Time {
+  id           Int            @id @default(autoincrement())
+  seconds      Int?
+  minutes      Int?
+  hours        Int?
+  hundredths   Int?
+  PersonalBest PersonalBest[]
+}

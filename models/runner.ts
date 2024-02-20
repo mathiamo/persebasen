@@ -1,9 +1,9 @@
 export type Runner = {
-  id: string;
+  id: number;
   name: string;
   age: number;
-  image?: string;
-  personalBests: PersonalBest[];
+  image?: string | null;
+  personalBests?: PersonalBest[];
 }
 
 export type RunnerCreate = Omit<Runner, 'id'>;

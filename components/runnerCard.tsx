@@ -2,53 +2,63 @@ import {Avatar, Button, Card, CardContent, CardHeader, Grid} from "@mui/material
 import styles from "./runnerCard.module.scss";
 import {Distance, PersonalBest, Runner} from "../models/runner";
 import {defaultDistances, getDistanceDisplayString} from "../utils/running.util";
+import {Fragment} from "react";
 
 export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () => void }) => {
   function getPbTime(distance: Number) {
-    return runner.personalBests.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
+    return runner.personalBests?.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
   }
 
-  function getPb(pbs: PersonalBest[], distance: Number): PersonalBest{
-     return pbs.find(pb => pb.distance.value === distance)
+  function getPb(pbs: PersonalBest[] | undefined, distance: Number): PersonalBest | undefined {
+     return pbs?.find(pb => pb.distance.value === distance)
   }
-
 
   const handleDelete = () => {
     onDelete();
   };
   return (
     <Card variant="outlined">
-      <CardHeader avatar={
-        <Avatar src={runner.image} alt={"image of " + runner.name}/>} title={runner.name+ ', ' + runner.age + ' år'}>
+      <CardHeader
+          avatar={runner.image && <Avatar src={runner.image} alt={"image of " + runner.name}/>}
+          title={runner.name + ', ' + runner.age + ' år'}>
       </CardHeader>
 
       <CardContent>
         {runner &&
             <Grid container spacing={2} className={styles.runnerStats}>
-                {defaultDistances.map(distance => (
-                    <>
-                        <Grid item xs={3}>
-                            {getDistanceDisplayString(distance.value)}
-                        </Grid>
-                        <Grid item xs={2}>
-                            {getPbTime(distance.value)}
-                        </Grid>
-                        <Grid item xs={4}>
-                            {getPb(runner.personalBests, distance.value).date?.toDateString()}
-                        </Grid>
-                        <Grid item xs={3}>
-                            {getPb(runner.personalBests, distance.value).location}
-                        </Grid>
-                    </>
-                ))}
+                {defaultDistances.map((distance, index) => {
+                    const pb: PersonalBest | undefined = getPb(runner.personalBests, distance.value);
+                    // Define a type for the date format options
+                    type DateFormatOptions = {
+                        year?: 'numeric';
+                        month?: 'numeric' | 'long' | 'short' | 'narrow';
+                        day?: 'numeric';
+                    };
+                    const options: DateFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                    return (
+                        <Fragment key={index}>
+                            <Grid item xs={3}>
+                                {getDistanceDisplayString(distance.value)}
+                            </Grid>
+                            <Grid item xs={2}>
+                                {getPbTime(distance.value)}
+                            </Grid>
+                            <Grid item xs={4}>
+                                {pb && pb.date && new Date(pb.date).toLocaleDateString('nb-NO', options)}
+                            </Grid>
+                            <Grid item xs={3}>
+                                {pb?.location}
+                            </Grid>
+                        </Fragment>
+                    );
+                })}
             </Grid>
         }
         <Grid container justifyContent="flex-end">
-          <Button variant="contained" onClick={handleDelete}>
+          <Button variant="contained" onClick={handleDelete} style={{marginTop: '16px'}}>
             Delete
           </Button>
         </Grid>
-
       </CardContent>
     </Card>
   );

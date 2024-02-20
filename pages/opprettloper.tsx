@@ -4,28 +4,28 @@ import CreateRunnerForm from "../components/createRunner";
 import {RunnerCreate} from "../models/runner";
 import {addRunner} from "./api/runnerData";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-
 interface OpprettloperProps {
     onClose: () => void;
 }
 
 export default function Opprettloper({ onClose }: OpprettloperProps) {
     const queryCache = useQueryClient()
-    const {mutateAsync: addRunnerMutation} = useMutation({
+    const { mutateAsync: addRunnerMutation } = useMutation({
         mutationFn: addRunner,
         onSuccess: () => {
-            queryCache.invalidateQueries({queryKey: ['runners']});
-            onClose();
-        }
+            console.log("Mutation succeeded");
+            queryCache.invalidateQueries({ queryKey: ['runners'] })
+                .then(() => onClose());
+        },
+        onError: (error) => {
+            console.error("Mutation failed", error);
+        },
     });
-    const handleCreateRunner = (createdRunner: RunnerCreate) => {
-
+    const handleCreateRunner = async (createdRunner: RunnerCreate) => {
         try {
-            addRunnerMutation(createdRunner)
-            console.log("New runner created:", createdRunner);
+            await addRunnerMutation(createdRunner);
         } catch (error) {
             console.error("Error creating runner:", error);
-            // Handle errors if necessary
         }
     };
   return (
@@ -34,7 +34,7 @@ export default function Opprettloper({ onClose }: OpprettloperProps) {
         <title>Opprett Løper</title>
       </Head>
       <Grid item xs={12}>
-        <CreateRunnerForm onSubmitSuccess={handleCreateRunner}  />
+        <CreateRunnerForm onSubmitSuccess={handleCreateRunner} />
       </Grid>
     </Grid>
   )

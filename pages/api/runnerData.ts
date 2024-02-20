@@ -1,36 +1,63 @@
 import {faker} from '@faker-js/faker';
 import {readableRunTime} from "../../utils/strings.util";
-import {PersonalBest, Runner, RunnerCreate, Time} from "../../models/runner"
+import {PersonalBest, Runner, RunnerCreate} from "../../models/runner"
+import axios from "axios";
 
 const runners = Array.from({length: 5}).map(() => generateRunner());
 
 export const fetchRunners = async (query = ""): Promise<Runner[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log("Fetched runners");
+    try {
+        const response = await axios.get("http://localhost:3001/runners", {
+            params: { query: query.toLowerCase() },
+        });
 
-  const filteredRunners = runners.filter((runner) =>
-    runner.name.toLowerCase().includes(query.toLowerCase())
-  )
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error(`Failed to fetch runners: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error("Error fetching runners:", error);
+        throw new Error("Failed to fetch runners");
+    }
+};
 
-  return [...filteredRunners]
-}
-export const addRunner = async (createdRunner: RunnerCreate): Promise<Runner> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+export const addRunner = async (newRunner: RunnerCreate): Promise<Runner> => {
+    try {
+        console.log("Creating runner", newRunner)
+        const response = await axios.post("http://localhost:3001/runners/create", newRunner);
 
-  const runner: Runner = {
-    id: faker.datatype.uuid(),
-    name: createdRunner.name,
-    age: createdRunner.age,
-    personalBests: createdRunner.personalBests
-  }
-  runners.unshift(runner)
-  return runner;
-}
-export const removeRunner = async (id: string): Promise<void> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const index = runners.findIndex((runner) => runner.id === id);
-  runners.splice(index, 1);
-}
+        if (response.status === 200) {
+            const runner: Runner = response.data;
+            runners.unshift(runner);
+            return runner;
+        } else {
+            throw new Error(`Failed to create runner: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error("Error creating runner:", error);
+        throw new Error(`Failed to create runner: ${error}`);
+    }
+};
+
+export const removeRunner = async (id: number): Promise<void> => {
+    console.log("Removing runner with id", id)
+    try {
+        const response = await axios.delete(`http://localhost:3001/runners/delete/${id}`);
+
+        if (response.status === 200) {
+            const index = runners.findIndex((runner) => runner.id === id);
+            if (index !== -1) {
+                runners.splice(index, 1);
+            } else {
+                console.error(`Runner with id ${id} not found in local array.`);
+            }
+        }
+    } catch (error) {
+        console.error("Error removing runner:", error);
+        throw new Error(`Failed to remove runner: ${error}`);
+    }
+};
 
 function generateRunner(): Runner {
   const distances = [
@@ -79,7 +106,7 @@ function generateRunner(): Runner {
     });
 
   return {
-    id: faker.datatype.uuid(),
+    id: faker.datatype.number(),
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     age: faker.datatype.number({min: 18, max: 40}),
     image: faker.image.avatar(),

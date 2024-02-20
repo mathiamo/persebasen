@@ -15,7 +15,6 @@ interface CreateRunnerFormProps {
   onSubmitSuccess: (data: RunnerCreate) => void;
 }
 
-
 // Define the Zod schema for personal best
 const personalBestSchema = z.object({
   distance: z.object({
@@ -41,21 +40,20 @@ const schema = z.object({
 export type CreateRunnerFormFields = z.infer<typeof schema>;
 
 const CreateRunner: React.FC<CreateRunnerFormProps> = ({ onSubmitSuccess }) => {
-
-
-
   const {
     register,
     handleSubmit,
     setError,
     control,
+    setValue,
     formState: {errors, isSubmitting, },
   } = useForm<CreateRunnerFormFields>({
     resolver: zodResolver(schema),
   });
 
-  const {fields, append, remove} = useFieldArray({
+  const {fields, append, remove } = useFieldArray({
     control,
+
     name: 'personalBests',
   });
   const handleAddPersonalBest = () => {
@@ -81,10 +79,8 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({ onSubmitSuccess }) => {
 
 
   const onSubmit: SubmitHandler<CreateRunnerFormFields> = async (data) => {
+    console.log(data)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(data);
-
       const pbs: PersonalBest[] =
           data.personalBests.map( (pb) => ({
                 distance: {
@@ -97,7 +93,7 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({ onSubmitSuccess }) => {
                 timeString: readableRunTime(calculateTimeInSeconds(pb.time)),
               })
       )
-
+      console.log(pbs)
       onSubmitSuccess({
         name: data.name,
         age: data.age,
@@ -143,7 +139,10 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({ onSubmitSuccess }) => {
                     render={({ field }) => (
                         <Select
                             value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              setValue(`personalBests.${index}.distance.value`, Number(e.target.value));
+                            }}
                             label="Distance"
                             fullWidth
                         >
