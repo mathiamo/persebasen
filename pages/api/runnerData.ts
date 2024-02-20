@@ -3,9 +3,7 @@ import {readableRunTime} from "../../utils/strings.util";
 import {PersonalBest, Runner, RunnerCreate} from "../../models/runner"
 import axios from "axios";
 import {NextApiRequest, NextApiResponse} from "next";
-const isLocal = process.env.NODE_ENV === 'development';
-const BASE_URL = isLocal ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_API_BASE_URL;
-
+const BASE_URL = '/api';
 const runners = Array.from({length: 5}).map(() => generateRunner());
 
 export const fetchRunners = async (query = ""): Promise<Runner[]> => {
