@@ -38,5 +38,7 @@ next-env.d.ts
 
 # Database files
 *.sqlite
+migration/*.sql
 *.db
+*.toml
 # Add other patterns for database files if needed
