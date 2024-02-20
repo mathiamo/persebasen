@@ -1,9 +1,13 @@
-// api/delete.ts
+// api/delete.[id].ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
+        if (req.method !== 'DELETE') {
+            res.status(405).json({ error: 'Method Not Allowed' });
+            return;
+        }
         const runnerId = parseInt(req.query.id as string);
 
         // Find the runner along with their related personal bests, distances, and times
