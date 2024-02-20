@@ -11,7 +11,7 @@ export default function Home() {
 
   const queryCache = useQueryClient()
 
-  const [search, _] = useState("");
+  const [search, ] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {

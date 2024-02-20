@@ -13,7 +13,7 @@ export const readableRunTime = (timeInSeconds: number) => {
 
 export async function copyTextToClipboard(text: string | undefined) {
   if ('clipboard' in navigator) {
-    return await navigator.clipboard.writeText(<string>text);
+    return navigator.clipboard.writeText(<string>text);
   } else {
     return document.execCommand('copy', true, text);
   }

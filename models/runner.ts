@@ -3,7 +3,7 @@ export type Runner = {
   name: string;
   age: number;
   image?: string | null;
-  personalBests?: PersonalBest[];
+  personalBests: PersonalBest[];
 }
 
 export type RunnerCreate = Omit<Runner, 'id'>;
