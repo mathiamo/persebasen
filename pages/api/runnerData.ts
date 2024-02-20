@@ -3,12 +3,14 @@ import {readableRunTime} from "../../utils/strings.util";
 import {PersonalBest, Runner, RunnerCreate} from "../../models/runner"
 import axios from "axios";
 import {NextApiRequest, NextApiResponse} from "next";
+const isLocal = process.env.NODE_ENV === 'development';
+const BASE_URL = isLocal ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const runners = Array.from({length: 5}).map(() => generateRunner());
 
 export const fetchRunners = async (query = ""): Promise<Runner[]> => {
     try {
-        const response = await axios.get("http://localhost:3001/runners", {
+        const response = await axios.get(`${BASE_URL}/runners`, {
             params: { query: query.toLowerCase() },
         });
 
@@ -26,7 +28,7 @@ export const fetchRunners = async (query = ""): Promise<Runner[]> => {
 export const addRunner = async (newRunner: RunnerCreate): Promise<Runner> => {
     try {
         console.log("Creating runner", newRunner)
-        const response = await axios.post("http://localhost:3001/runners/create", newRunner);
+        const response = await axios.post(`${BASE_URL}/runners/create`, newRunner);
 
         if (response.status === 200) {
             const runner: Runner = response.data;
@@ -44,7 +46,7 @@ export const addRunner = async (newRunner: RunnerCreate): Promise<Runner> => {
 export const removeRunner = async (id: number): Promise<void> => {
     console.log("Removing runner with id", id)
     try {
-        const response = await axios.delete(`http://localhost:3001/runners/delete/${id}`);
+        const response = await axios.delete(`${BASE_URL}/runners/delete/${id}`);
 
         if (response.status === 200) {
             const index = runners.findIndex((runner) => runner.id === id);
