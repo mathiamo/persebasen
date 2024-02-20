@@ -8,7 +8,7 @@ const runners = Array.from({length: 5}).map(() => generateRunner());
 
 export const fetchRunners = async (query = ""): Promise<Runner[]> => {
     try {
-        const response = await axios.get(`${BASE_URL}/runners`, {
+        const response = await axios.get(`${BASE_URL}/runners/get`, {
             params: { query: query.toLowerCase() },
         });
 
