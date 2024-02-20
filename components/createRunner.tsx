@@ -1,14 +1,12 @@
 import React from 'react';
-import {Distance, PersonalBest, Runner, RunnerCreate, Time} from '../models/runner';
+import { PersonalBest, RunnerCreate} from '../models/runner';
 import {Controller, SubmitHandler, useFieldArray, useForm} from 'react-hook-form';
 import {Button, Grid, MenuItem, Select, TextField} from '@mui/material';
 import {z} from 'zod';
 import {zodResolver} from "@hookform/resolvers/zod";
-import {addRunner} from "../pages/api/runnerData";
-import {faker} from "@faker-js/faker";
+
 import {readableRunTime} from "../utils/strings.util";
 import {calculateTimeInSeconds} from "../utils/time.util";
-import {HorizontalRule} from "@mui/icons-material";
 import {defaultDistances} from "../utils/running.util";
 
 interface CreateRunnerFormProps {

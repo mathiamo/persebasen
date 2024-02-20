@@ -1,15 +1,15 @@
 import {Avatar, Button, Card, CardContent, CardHeader, Grid} from "@mui/material";
 import styles from "./runnerCard.module.scss";
-import {Distance, PersonalBest, Runner} from "../models/runner";
+import {PersonalBest, Runner} from "../models/runner";
 import {defaultDistances, getDistanceDisplayString} from "../utils/running.util";
 import {Fragment} from "react";
 
 export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () => void }) => {
-  function getPbTime(distance: Number) {
+  function getPbTime(distance: number) {
     return runner.personalBests?.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
   }
 
-  function getPb(pbs: PersonalBest[] | undefined, distance: Number): PersonalBest | undefined {
+  function getPb(pbs: PersonalBest[] | undefined, distance: number): PersonalBest | undefined {
      return pbs?.find(pb => pb.distance.value === distance)
   }
 

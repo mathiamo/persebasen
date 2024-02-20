@@ -1,9 +1,8 @@
 
 import React, {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
 import {fetchRunners, removeRunner} from "./api/runnerData";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Dialog, DialogContent, Fab, Grid, Icon} from "@mui/material";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {Dialog, DialogContent, Fab, Grid} from "@mui/material";
 import Opprettloper from "./opprettloper";
 import {RunnerCard} from "../components/runnerCard";
 import {Add} from "@mui/icons-material";
@@ -12,7 +11,7 @@ export default function Home() {
 
   const queryCache = useQueryClient()
 
-  const [search, setSearch] = useState("");
+  const [search, _] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -31,6 +30,7 @@ export default function Home() {
     mutationFn: removeRunner,
     onSuccess: () => {
       queryCache.invalidateQueries({queryKey: ['runners']})
+          .then(() => console.log("Invalidated query"));
     }
   });
 

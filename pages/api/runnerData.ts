@@ -2,6 +2,7 @@ import {faker} from '@faker-js/faker';
 import {readableRunTime} from "../../utils/strings.util";
 import {PersonalBest, Runner, RunnerCreate} from "../../models/runner"
 import axios from "axios";
+import {NextApiRequest, NextApiResponse} from "next";
 
 const runners = Array.from({length: 5}).map(() => generateRunner());
 
@@ -69,7 +70,7 @@ function generateRunner(): Runner {
     {value: 42195, unit: 'meters'},
   ];
 
-  const checkDistance = (distance: any) => {
+  const checkDistance = (distance:  {value: number, unit: string}) => {
     if (distance.value === 1500) {
       return faker.datatype.number({min: 205, max: 360});
     } else if (distance.value === 3000) {
@@ -114,7 +115,7 @@ function generateRunner(): Runner {
   };
 }
 
-export default function handler(req: any, res: any) {
-  let runners = Array.from({length: 4}).map(() => generateRunner());
-  res.status(200).json(runners);
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    const runners = Array.from({ length: 4 }).map(() => generateRunner());
+    res.status(200).json(runners);
 }
