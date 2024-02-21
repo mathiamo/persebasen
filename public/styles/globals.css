@@ -40,7 +40,7 @@
     --card-border-rgb: 131, 134, 135;
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
     :root {
         --foreground-rgb: 255, 255, 255;
         --background-start-rgb: 0, 0, 0;
@@ -102,8 +102,8 @@ a {
     text-decoration: none;
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
     html {
-        color-scheme: light;
+        color-scheme: dark;
     }
 }

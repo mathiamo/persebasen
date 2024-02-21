@@ -1,16 +1,16 @@
 // api/create.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../lib/prisma';
 import {PersonalBest} from "../../../models/runner";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const createdRunner = req.body;
-        console.log('Received runner data:', createdRunner);
         const savedRunner = await prisma.runner.create({
             data: {
                 name: createdRunner.name,
                 age: createdRunner.age,
+                image: createdRunner.image,
                 personalBests: {
                     create: createdRunner.personalBests.map((pb: PersonalBest) => ({
                         distance: {
@@ -39,12 +39,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Error:', error.message);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({error: 'Internal Server Error'});
         } else {
             console.error('Unknown error:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({error: 'Internal Server Error'});
         }
     } finally {
-        await prisma.$disconnect(); // Disconnect Prisma Client after the operation
+        await prisma.$disconnect();
     }
 }

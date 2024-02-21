@@ -14,7 +14,7 @@ export const distanceDisplayStrings: Record<number, string> = {
     3000: "3 000",
     5000: "5 000",
     10000: "10 000",
-    21097: "Halvmaraton",
+    21097: "Halvmara",
     42195: "Maraton",
 };
 

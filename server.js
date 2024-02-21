@@ -2,7 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
+const {PrismaClient} = require('./prisma/generated/client');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -23,6 +23,7 @@ app.post('/runners/create', async (req, res) => {
             data: {
                 name: createdRunner.name,
                 age: createdRunner.age,
+                image: createdRunner.image,
                 personalBests: {
                     create: createdRunner.personalBests.map((pb) => ({
                         distance: {
@@ -33,30 +34,30 @@ app.post('/runners/create', async (req, res) => {
                         },
                         time: {
                             create: {
-                               seconds: pb.time.seconds,
-                               minutes: pb.time.minutes,
-                               hours: pb.time.hours,
-                               hundredths: pb.time.hundredths
+                                seconds: pb.time.seconds,
+                                minutes: pb.time.minutes,
+                                hours: pb.time.hours,
+                                hundredths: pb.time.hundredths
                             }
                         },
                         timeString: pb.timeString,
                         location: pb.location,
                         date: pb.date,
                     })),
-                    }
-                },
+                }
+            },
         });
 
         res.json(savedRunner);
-    }catch (error) {
+    } catch (error) {
         console.error('Error:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }finally {
+        res.status(500).json({error: 'Internal Server Error'});
+    } finally {
         await prisma.$disconnect(); // Disconnect Prisma Client after the operation
     }
 });
 
-app.get('/runners', async (req, res) => {
+app.get('/runners/get', async (req, res) => {
     try {
         const query = req.query.query || '';
         const runners = await prisma.runner.findMany({
@@ -79,8 +80,8 @@ app.get('/runners', async (req, res) => {
         res.json(runners);
     } catch (error) {
         console.error('Error:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }finally {
+        res.status(500).json({error: 'Internal Server Error'});
+    } finally {
         await prisma.$disconnect(); // Disconnect Prisma Client after the operation
     }
 });
@@ -106,7 +107,7 @@ app.delete('/runners/delete/:id', async (req, res) => {
 
         if (!runnerWithAssociations) {
             // Runner not found
-            res.status(404).json({ error: 'Runner not found' });
+            res.status(404).json({error: 'Runner not found'});
             return;
         }
 
@@ -128,7 +129,7 @@ app.delete('/runners/delete/:id', async (req, res) => {
         res.json(deletedRunner);
     } catch (error) {
         console.error('Error:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({error: 'Internal Server Error'});
     } finally {
         await prisma.$disconnect(); // Disconnect Prisma Client after the operation
     }

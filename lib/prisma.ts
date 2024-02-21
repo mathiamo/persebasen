@@ -1,5 +1,4 @@
-
-import { PrismaClient } from '../prisma/generated/client';
+import {PrismaClient} from '../prisma/generated/client';
 
 let prisma: PrismaClient;
 
@@ -11,7 +10,13 @@ if (process.env.NODE_ENV === 'production') {
     if (!global.prisma) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        global.prisma = new PrismaClient();
+        global.prisma = new PrismaClient({
+            datasources: {
+                db: {
+                    url: process.env.DATABASE_URL
+                },
+            },
+        });
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
