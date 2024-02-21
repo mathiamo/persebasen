@@ -31,6 +31,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+prisma/generated
 
 # typescript
 *.tsbuildinfo
@@ -38,7 +39,7 @@ next-env.d.ts
 
 # Database files
 *.sqlite
-migration/*.sql
+
 *.db
 *.toml
 # Add other patterns for database files if needed
