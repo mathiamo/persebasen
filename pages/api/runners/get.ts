@@ -1,4 +1,3 @@
-// api/get.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
@@ -32,6 +31,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ error: 'Internal Server Error' });
         }
     } finally {
-        await prisma.$disconnect(); // Disconnect Prisma Client after the operation
+        await prisma.$disconnect();
     }
 }

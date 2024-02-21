@@ -1,4 +1,3 @@
-// api/delete.[id].ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
@@ -10,7 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         const runnerId = parseInt(req.query.id as string);
 
-        // Find the runner along with their related personal bests, distances, and times
         const runnerWithAssociations = await prisma.runner.findUnique({
             where: {
                 id: runnerId,
@@ -26,12 +24,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         if (!runnerWithAssociations) {
-            // Runner not found
             res.status(404).json({ error: 'Runner not found' });
             return;
         }
 
-        // Delete the runner and cascade deletion of related records
         const deletedRunner = await prisma.runner.delete({
             where: {
                 id: runnerId,
@@ -56,6 +52,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ error: 'Internal Server Error' });
         }
     } finally {
-        await prisma.$disconnect(); // Disconnect Prisma Client after the operation
+        await prisma.$disconnect();
     }
 }

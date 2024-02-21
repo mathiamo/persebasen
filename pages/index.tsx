@@ -1,4 +1,3 @@
-
 import React, {useState} from "react";
 import {fetchRunners, removeRunner} from "./api/runnerData";
 import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
