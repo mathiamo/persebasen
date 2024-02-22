@@ -74,10 +74,11 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 export const removeRunner = async (id: number): Promise<void> => {
     console.log("Removing runner with id", id)
     try {
-        const response = await axios.delete(`${BASE_URL}/runners/${id}/delete`, {
-            method: 'POST',
+        const response = await axios.get(`${BASE_URL}/runners/delete`, {
+            method: "DELETE",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
+                "X-ID": id,
             },
         });
         if (response.status === 200) {
