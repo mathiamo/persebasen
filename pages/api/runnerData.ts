@@ -74,7 +74,7 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 export const removeRunner = async (id: number): Promise<void> => {
     console.log("Removing runner with id", id)
     try {
-        const response = await fetch(`${BASE_URL}/runners/delete/${id}`, {
+        const response = await axios.delete(`${BASE_URL}/runners/${id}/delete`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

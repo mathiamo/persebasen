@@ -1,13 +1,15 @@
 import {NextApiRequest, NextApiResponse} from 'next';
-import prisma from '../../../lib/prisma';
+import prisma from '../../../../lib/prisma';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function DELETE(request: NextApiRequest, res: NextApiResponse, {params}: {
+    params: { id: string }
+}) {
     try {
-        const runnerId = parseInt(req.query.id as string);
+        const {id} = params;
 
         const runnerWithAssociations = await prisma.runner.findUnique({
             where: {
-                id: runnerId,
+                id: Number(id),
             },
             include: {
                 personalBests: {
@@ -26,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const deletedRunner = await prisma.runner.delete({
             where: {
-                id: runnerId,
+                id: Number(id),
             },
             include: {
                 personalBests: {
