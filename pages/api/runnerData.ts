@@ -63,7 +63,7 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 
             return runner;
         } else {
-            throw new Error(`Failed to create runner: ${response.statusText}`);
+            throw new Error(`Failed to update runner: ${response.statusText}`);
         }
     } catch (error) {
         console.error("Error creating runner:", error);
@@ -74,8 +74,12 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 export const removeRunner = async (id: number): Promise<void> => {
     console.log("Removing runner with id", id)
     try {
-        const response = await axios.delete(`${BASE_URL}/runners/delete/${id}`);
-
+        const response = await fetch(`${BASE_URL}/runners/delete/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         if (response.status === 200) {
             const index = runners.findIndex((runner) => runner.id === id);
             if (index !== -1) {

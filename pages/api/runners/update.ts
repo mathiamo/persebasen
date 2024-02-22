@@ -5,8 +5,8 @@ import {PersonalBest} from '../../../models/runner';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const {id, updatedRunner} = req.body;
-
+        const updatedRunner = req.body;
+        console.log('Updating runner', updatedRunner)
         const updatedRunnerData = {
             name: updatedRunner.name,
             age: updatedRunner.age,
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         };
 
         const updatedRunnerResult = await prisma.runner.update({
-            where: {id: id},
+            where: {id: updatedRunner.id},
             data: updatedRunnerData,
         });
 

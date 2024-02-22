@@ -1,10 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        if (req.method !== 'DELETE') {
-            res.status(405).json({ error: 'Method Not Allowed' });
+        if (req.method !== 'POST') {
+            res.status(405).json({error: 'Method Not Allowed'});
             return;
         }
         const runnerId = parseInt(req.query.id as string);
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         if (!runnerWithAssociations) {
-            res.status(404).json({ error: 'Runner not found' });
+            res.status(404).json({error: 'Runner not found'});
             return;
         }
 
@@ -43,13 +43,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         res.json(deletedRunner);
-    }  catch (error: unknown) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Error:', error.message);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({error: 'Internal Server Error'});
         } else {
             console.error('Unknown error:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({error: 'Internal Server Error'});
         }
     } finally {
         await prisma.$disconnect();
