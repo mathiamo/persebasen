@@ -1,15 +1,12 @@
 import {NextApiRequest, NextApiResponse} from 'next';
-import prisma from '../../../lib/prisma';
-import {headers} from "next/headers";
+import prisma from '../../../../lib/prisma';
 
-export default async function DELETE(request: NextApiRequest, res: NextApiResponse) {
+export default async function DELETE(request: NextApiRequest, res: NextApiResponse, {params}: {
+    params: { id: string }
+}) {
     try {
-        const head = headers();
-
-        console.log(request.headers);
-
-        const id = head.get("x-id");
-
+        const {id} = params;
+        console.log("###", id)
         const runnerWithAssociations = await prisma.runner.findUnique({
             where: {
                 id: Number(id),

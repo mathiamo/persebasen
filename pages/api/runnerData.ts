@@ -74,12 +74,8 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 export const removeRunner = async (id: number): Promise<void> => {
     console.log("Removing runner with id", id)
     try {
-        const response = await axios.get(`${BASE_URL}/runners/delete`, {
+        const response = await axios.get(`${BASE_URL}/runners/${id}/delete`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "X-ID": id,
-            },
         });
         if (response.status === 200) {
             const index = runners.findIndex((runner) => runner.id === id);
