@@ -49,10 +49,10 @@ export const RunnerCard = ({runner, onDelete, onUpdate}: {
                                     <Grid item xs={2}>
                                         {getPbTime(distance.value)}
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={3}>
                                         {pb && pb.date && new Date(pb.date).toLocaleDateString('nb-NO', options)}
                                     </Grid>
-                                    <Grid item xs={3}
+                                    <Grid item xs={4}
                                           style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
                                         {pb?.location}
                                     </Grid>
