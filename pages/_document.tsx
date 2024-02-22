@@ -1,3 +1,4 @@
+"use client"
 import {Head, Html, Main, NextScript} from 'next/document'
 import Navbar from "../components/header";
 import React from "react";
