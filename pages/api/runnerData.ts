@@ -1,6 +1,6 @@
 import {faker} from '@faker-js/faker';
 import {readableRunTime} from "../../utils/strings.util";
-import {PersonalBest, Runner, RunnerCreate} from "../../models/runner"
+import {PersonalBest, Runner, RunnerCreate, RunnerUpdate} from "../../models/runner"
 import axios from "axios";
 import {NextApiRequest, NextApiResponse} from "next";
 
@@ -33,6 +33,34 @@ export const addRunner = async (newRunner: RunnerCreate): Promise<Runner> => {
         if (response.status === 200) {
             const runner: Runner = response.data;
             runners.unshift(runner);
+            return runner;
+        } else {
+            throw new Error(`Failed to create runner: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error("Error creating runner:", error);
+        throw new Error(`Failed to create runner: ${error}`);
+    }
+};
+
+export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner> => {
+    try {
+        console.log("Updating runner", updatedRunner)
+        const response = await axios.put(`${BASE_URL}/runners/update`, updatedRunner);
+        if (response.status === 200) {
+            const runner: Runner = response.data;
+
+            // Find the index of the existing runner in the array
+            const index = runners.findIndex((r) => r.id === runner.id);
+
+            if (index !== -1) {
+                // Update the existing runner in the array
+                runners[index] = runner;
+            } else {
+                // If the runner is not found, add it to the beginning of the array
+                runners.unshift(runner);
+            }
+
             return runner;
         } else {
             throw new Error(`Failed to create runner: ${response.statusText}`);

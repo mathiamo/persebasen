@@ -4,7 +4,11 @@ import {PersonalBest, Runner} from "../models/runner";
 import {defaultDistances, getDistanceDisplayString} from "../utils/running.util";
 import {Fragment} from "react";
 
-export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () => void }) => {
+export const RunnerCard = ({runner, onDelete, onUpdate}: {
+    runner: Runner;
+    onDelete: () => void;
+    onUpdate: (runner: Runner) => void;
+}) => {
     function getPbTime(distance: number) {
         return runner.personalBests?.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
     }
@@ -15,6 +19,9 @@ export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () =>
 
     const handleDelete = () => {
         onDelete();
+    };
+    const handleUpdate = (runner: Runner) => {
+        onUpdate(runner);
     };
     return (
         <Card variant="outlined">
@@ -55,6 +62,10 @@ export const RunnerCard = ({runner, onDelete}: { runner: Runner; onDelete: () =>
                     </Grid>
                 }
                 <Grid container justifyContent="flex-end">
+                    <Button variant="contained" onClick={() => handleUpdate(runner)}
+                            style={{marginTop: '16px', marginRight: '16px'}}>
+                        Update
+                    </Button>
                     <Button variant="contained" onClick={handleDelete} style={{marginTop: '16px'}}>
                         Delete
                     </Button>

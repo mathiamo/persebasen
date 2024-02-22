@@ -1,36 +1,37 @@
 import React from 'react';
-import {PersonalBest, RunnerCreate, runnerSchema} from '../models/runner';
+import {PersonalBest, Runner, runnerSchema, RunnerUpdate} from '../models/runner';
 import {Controller, SubmitHandler, useFieldArray, useForm} from 'react-hook-form';
 import {Button, Grid, MenuItem, Select, TextField} from '@mui/material';
-import {z} from 'zod';
 import {zodResolver} from "@hookform/resolvers/zod";
-
 import {readableRunTime} from "../utils/strings.util";
 import {calculateTimeInSeconds} from "../utils/time.util";
 import {defaultDistances} from "../utils/running.util";
+import {z} from "zod";
 
-interface CreateRunnerFormProps {
-    onSubmitSuccess: (data: RunnerCreate) => void;
+interface UpdateRunnerFormProps {
+    initialValues: Runner;
+    onSubmitSuccess: (data: RunnerUpdate) => void;
 }
 
-export type CreateRunnerFormFields = z.infer<typeof runnerSchema>;
-
-const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
+export type UpdateRunnerFormFields = z.infer<typeof runnerSchema>;
+const UpdateRunner: React.FC<UpdateRunnerFormProps> = ({initialValues, onSubmitSuccess}) => {
     const {
         register,
         handleSubmit,
         setError,
         control,
         setValue,
-        formState: {errors, isSubmitting,},
-    } = useForm<CreateRunnerFormFields>({
+        formState: {errors, isSubmitting},
+    } = useForm<UpdateRunnerFormFields>({
         resolver: zodResolver(runnerSchema),
+        defaultValues: initialValues
     });
 
     const {fields, append, remove} = useFieldArray({
         control,
         name: 'personalBests',
     });
+
     const handleAddPersonalBest = () => {
         const usedDistanceValues = new Set(fields.map((pb) => pb.distance.value));
         const nextFreeDistance = defaultDistances.find((dist) => !usedDistanceValues.has(dist.value));
@@ -52,35 +53,35 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
         });
     };
 
-
-    const onSubmit: SubmitHandler<CreateRunnerFormFields> = async (data) => {
+    const onSubmit: SubmitHandler<UpdateRunnerFormFields> = async (data) => {
         try {
-            const pbs: PersonalBest[] =
-                data.personalBests.map((pb) => ({
-                        distance: {
-                            value: pb.distance.value,
-                            unit: pb.distance.unit,
-                        },
-                        date: pb.date,
-                        time: pb.time,
-                        location: pb.location,
-                        timeString: readableRunTime(calculateTimeInSeconds(pb.time)) + (pb.time.hundredths !== 0 ? `, ${pb.time.hundredths}` : ''),
-                    })
-                )
-            console.log(pbs)
-            onSubmitSuccess({
-                name: data.name,
-                age: data.age,
-                image: data.image,
-                personalBests: pbs,
-            });
+            const pbs: PersonalBest[] = data.personalBests.map((pb) => ({
+                distance: {
+                    value: pb.distance.value,
+                    unit: pb.distance.unit,
+                },
+                date: pb.date,
+                time: pb.time,
+                location: pb.location,
+                timeString: readableRunTime(calculateTimeInSeconds(pb.time)) + (pb.time.hundredths !== 0 ? `, ${pb.time.hundredths}` : ''),
+            }))
+
+            onSubmitSuccess(
+                {
+                    id: initialValues.id,
+                    name: data.name,
+                    age: data.age,
+                    image: data.image,
+                    personalBests: pbs,
+                }
+            );
+
         } catch (error) {
             setError("name", {
                 message: "Navn allerede brukt",
             });
         }
     };
-
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -203,7 +204,7 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
                 <Grid item xs={12}>
                     <Button variant="contained" disabled={isSubmitting} type="submit" color="primary" fullWidth
                             style={{marginTop: '16px'}}>
-                        {isSubmitting ? "Creating..." : "Create"}
+                        {isSubmitting ? "Updating..." : "Update"}
                     </Button>
                 </Grid>
             </Grid>
@@ -211,5 +212,4 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
     );
 };
 
-
-export default CreateRunner;
+export default UpdateRunner;

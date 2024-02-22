@@ -5,20 +5,32 @@ import {Dialog, DialogContent, Fab, Grid} from "@mui/material";
 import Opprettloper from "./opprettloper";
 import {RunnerCard} from "../components/runnerCard";
 import {Add} from "@mui/icons-material";
+import EndreLoper from "./endreloper";
+import {Runner} from "../models/runner";
 
 export default function Home() {
 
     const queryCache = useQueryClient()
 
     const [search,] = useState("");
-    const [open, setOpen] = useState(false);
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+    const [initialValues, setInitialValues] = useState<Runner | null>(null);
 
-    const handleOpen = () => {
-        setOpen(true);
+    const handleOpenCreateDialog = () => {
+        setCreateDialogOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleCloseCreateDialog = () => {
+        setCreateDialogOpen(false);
+    };
+
+    const handleOpenUpdateDialog = () => {
+        setUpdateDialogOpen(true);
+    };
+
+    const handleCloseUpdateDialog = () => {
+        setUpdateDialogOpen(false);
     };
     const {data: runners, isLoading} = useQuery({
         queryFn: () => fetchRunners(search),
@@ -33,6 +45,7 @@ export default function Home() {
         }
     });
 
+
     if (isLoading) {
         return <div>Loading...</div>
     }
@@ -43,19 +56,31 @@ export default function Home() {
                 color="primary"
                 aria-label="add"
                 style={{position: "fixed", bottom: 16, right: 16}}
-                onClick={handleOpen}
+                onClick={handleOpenCreateDialog}
             >
                 <Add/>
             </Fab>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={createDialogOpen} onClose={handleCloseCreateDialog}>
                 <DialogContent>
-                    <Opprettloper onClose={handleClose}/>
+                    <Opprettloper onClose={handleCloseCreateDialog}/>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={updateDialogOpen} onClose={handleCloseUpdateDialog}>
+                <DialogContent>
+                    {initialValues && (
+                        <EndreLoper initialValues={initialValues} onClose={handleCloseUpdateDialog}/>)
+                    }
                 </DialogContent>
             </Dialog>
             <Grid sx={{p: 2}} container spacing={2}>
                 {runners?.map((runner) => (
                     <Grid item xs={12} md={6} lg={4} key={runner.id}>
-                        <RunnerCard runner={runner} onDelete={() => removeRunnerMutation(runner.id)}></RunnerCard>
+                        <RunnerCard runner={runner} onDelete={() => removeRunnerMutation(runner.id)}
+                                    onUpdate={() => {
+                                        setInitialValues(runner);
+                                        handleOpenUpdateDialog();
+                                    }}
+                        ></RunnerCard>
                     </Grid>
                 ))}
             </Grid>

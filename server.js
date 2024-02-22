@@ -57,6 +57,55 @@ app.post('/runners/create', async (req, res) => {
     }
 });
 
+app.put('/runners/update', async (req, res) => {
+    try {
+        const {id, ...updatedRunnerData} = req.body;
+
+        if (!id) {
+            return res.status(400).json({error: 'Runner ID is required'});
+        }
+
+        console.log('Received updated runner data:', updatedRunnerData);
+
+        const updatedRunner = await prisma.runner.update({
+            where: {id: parseInt(id, 10)},
+            data: {
+                name: updatedRunnerData.name,
+                age: updatedRunnerData.age,
+                image: updatedRunnerData.image,
+                personalBests: {
+                    deleteMany: {}, // You might want to clear the existing personal bests
+                    create: updatedRunnerData.personalBests.map((pb) => ({
+                        distance: {
+                            create: {
+                                value: pb.distance.value,
+                                unit: pb.distance.unit,
+                            }
+                        },
+                        time: {
+                            create: {
+                                seconds: pb.time.seconds,
+                                minutes: pb.time.minutes,
+                                hours: pb.time.hours,
+                                hundredths: pb.time.hundredths
+                            }
+                        },
+                        timeString: pb.timeString,
+                        location: pb.location,
+                        date: pb.date,
+                    })),
+                }
+            },
+        });
+
+        res.json(updatedRunner);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).json({error: 'Internal Server Error'});
+    } finally {
+        await prisma.$disconnect(); // Disconnect Prisma Client after the operation
+    }
+});
 app.get('/runners/get', async (req, res) => {
     try {
         const query = req.query.query || '';
