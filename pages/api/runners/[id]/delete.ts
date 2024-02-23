@@ -1,11 +1,16 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../../lib/prisma';
 
-export default async function handler(request: NextApiRequest, res: NextApiResponse, {params}: {
-    params: { id: string }
-}) {
+export default async function handler(request: NextApiRequest, res: NextApiResponse) {
     try {
-        const id = params.id;
+        const {id} = request.query
+        console.log('Received request with id:', id);
+
+        if (!id) {
+            res.status(400).json({error: 'Invalid request, missing id parameter'});
+            return;
+        }
+
         const runnerWithAssociations = await prisma.runner.findUnique({
             where: {
                 id: Number(id),
