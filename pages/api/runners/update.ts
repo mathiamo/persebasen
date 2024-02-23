@@ -1,3 +1,4 @@
+User
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../lib/prisma';
 import {PersonalBest} from '../../../models/runner';
@@ -13,22 +14,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 age: updatedRunner.age,
                 image: updatedRunner.image,
                 personalBests: {
-                    upsert: updatedRunner.personalBests.map((pb: PersonalBest) => ({
-                        where: {
-                            id: pb.id,
-                            time: {
-                                seconds: pb.time.seconds,
-                                minutes: pb.time.minutes,
-                                hours: pb.time.hours,
-                                hundredths: pb.time.hundredths,
+                    updateMany: updatedRunner.personalBests
+                        .filter((pb: PersonalBest) => pb.id !== undefined) // Filter out new entries
+                        .map((pb: PersonalBest) => ({
+                            where: {id: pb.id},
+                            data: {
+                                timeString: pb.timeString,
+                                location: pb.location,
+                                date: pb.date,
+                                time: {
+                                    upsert: {
+                                        seconds: pb.time.seconds,
+                                        minutes: pb.time.minutes,
+                                        hours: pb.time.hours,
+                                        hundredths: pb.time.hundredths,
+                                    },
+                                },
+                                distance: {
+                                    upsert: {
+                                        value: pb.distance.value,
+                                        unit: pb.distance.unit,
+                                    },
+                                },
                             },
-                            location: pb.location,
-                            date: pb.date,
-                        },
-                        update: {
-                            timeString: pb.timeString,
-                        },
-                        create: {
+                        })),
+                    create: updatedRunner.personalBests
+                        .filter((pb: PersonalBest) => pb.id === undefined) // Filter only new entries
+                        .map((pb: PersonalBest) => ({
                             distance: {
                                 create: {
                                     value: pb.distance.value,
@@ -46,8 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             timeString: pb.timeString,
                             location: pb.location,
                             date: pb.date,
-                        },
-                    })),
+                        })),
                 },
             },
         });

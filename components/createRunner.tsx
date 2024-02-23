@@ -65,7 +65,7 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
                         date: pb.date,
                         time: pb.time,
                         location: pb.location,
-                        timeString: readableRunTime(calculateTimeInSeconds(pb.time)) + (pb.time.hundredths !== 0 ? `, ${pb.time.hundredths}` : ''),
+                        timeString: readableRunTime(calculateTimeInSeconds(pb.time)) + (pb.time.hundredths !== 0 ? `,${pb.time.hundredths}` : ''),
                     })
                 )
             console.log(pbs)
