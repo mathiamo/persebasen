@@ -36,6 +36,7 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
         const nextFreeDistance = defaultDistances.find((dist) => !usedDistanceValues.has(dist.value));
 
         append({
+            id: 0,
             distance: {
                 value: nextFreeDistance ? nextFreeDistance.value : 0,
                 unit: 'meters',
