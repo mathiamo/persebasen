@@ -1,4 +1,3 @@
-User
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../lib/prisma';
 import {PersonalBest} from '../../../models/runner';
@@ -15,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 image: updatedRunner.image,
                 personalBests: {
                     updateMany: updatedRunner.personalBests
-                        .filter((pb: PersonalBest) => pb.id !== undefined) // Filter out new entries
+                        .filter((pb: PersonalBest) => pb.id !== 0) // Filter out new entries
                         .map((pb: PersonalBest) => ({
                             where: {id: pb.id},
                             data: {
