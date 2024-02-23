@@ -13,51 +13,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 age: updatedRunner.age,
                 image: updatedRunner.image,
                 personalBests: {
-                    updateMany: updatedRunner.personalBests
-                        .filter((pb: PersonalBest) => pb.id !== -1) // Filter out new entries
-                        .map((pb: PersonalBest) => ({
-                            where: {id: pb.id},
-                            data: {
-                                timeString: pb.timeString,
-                                location: pb.location,
-                                date: pb.date,
-                                time: {
-                                    upsert: {
-                                        seconds: pb.time.seconds,
-                                        minutes: pb.time.minutes,
-                                        hours: pb.time.hours,
-                                        hundredths: pb.time.hundredths,
-                                    },
-                                },
-                                distance: {
-                                    upsert: {
-                                        value: pb.distance.value,
-                                        unit: pb.distance.unit,
-                                    },
-                                },
+                    deleteMany: {}, // Delete all existing entries
+                    create: updatedRunner.personalBests.map((pb: PersonalBest) => ({
+                        distance: {
+                            create: {
+                                value: pb.distance.value,
+                                unit: pb.distance.unit,
                             },
-                        })),
-                    create: updatedRunner.personalBests
-                        .filter((pb: PersonalBest) => pb.id === undefined) // Filter only new entries
-                        .map((pb: PersonalBest) => ({
-                            distance: {
-                                create: {
-                                    value: pb.distance.value,
-                                    unit: pb.distance.unit,
-                                },
+                        },
+                        time: {
+                            create: {
+                                seconds: pb.time.seconds,
+                                minutes: pb.time.minutes,
+                                hours: pb.time.hours,
+                                hundredths: pb.time.hundredths,
                             },
-                            time: {
-                                create: {
-                                    seconds: pb.time.seconds,
-                                    minutes: pb.time.minutes,
-                                    hours: pb.time.hours,
-                                    hundredths: pb.time.hundredths,
-                                },
-                            },
-                            timeString: pb.timeString,
-                            location: pb.location,
-                            date: pb.date,
-                        })),
+                        },
+                        timeString: pb.timeString,
+                        location: pb.location,
+                        date: pb.date,
+                    })),
                 },
             },
         });
