@@ -1,5 +1,5 @@
 import React from 'react';
-import {PersonalBest, RunnerCreate, runnerSchema} from '../models/runner';
+import {PersonalBestCreate, RunnerCreate, runnerSchema} from '../models/runner';
 import {Controller, SubmitHandler, useFieldArray, useForm} from 'react-hook-form';
 import {Button, Grid, MenuItem, Select, TextField} from '@mui/material';
 import {z} from 'zod';
@@ -55,7 +55,7 @@ const CreateRunner: React.FC<CreateRunnerFormProps> = ({onSubmitSuccess}) => {
 
     const onSubmit: SubmitHandler<CreateRunnerFormFields> = async (data) => {
         try {
-            const pbs: PersonalBest[] =
+            const pbs: PersonalBestCreate[] =
                 data.personalBests.map((pb) => ({
                         distance: {
                             value: pb.distance.value,

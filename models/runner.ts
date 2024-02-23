@@ -8,10 +8,14 @@ export type Runner = {
     personalBests: PersonalBest[];
 }
 
-export type RunnerCreate = Omit<Runner, 'id'>;
+export type RunnerCreate = Omit<Runner, 'id' | 'personalBests'> & {
+    personalBests: PersonalBestCreate[];
+};
+export type PersonalBestCreate = Omit<PersonalBest, 'id'>;
 export type RunnerUpdate = Runner;
 
 export type PersonalBest = {
+    id: number;
     distance: Distance;
     time: Time;
     timeString?: string | null;
@@ -30,7 +34,6 @@ export type Time = {
     hours: number;
     hundredths: number;
 }
-
 
 // Define the Zod schema for personal best
 export const personalBestSchema = z.object({

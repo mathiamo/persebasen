@@ -1,4 +1,3 @@
-// api/update.ts
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../lib/prisma';
 import {PersonalBest} from '../../../models/runner';
@@ -16,8 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 personalBests: {
                     upsert: updatedRunner.personalBests.map((pb: PersonalBest) => ({
                         where: {
-                            // Assuming a combination of properties to identify a PersonalBest
-                            distance: {value: pb.distance.value, unit: pb.distance.unit},
+                            id: pb.id,
                             time: {
                                 seconds: pb.time.seconds,
                                 minutes: pb.time.minutes,
@@ -28,7 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             date: pb.date,
                         },
                         update: {
-                            // Update the properties as needed
                             timeString: pb.timeString,
                         },
                         create: {
