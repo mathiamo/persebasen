@@ -37,6 +37,7 @@ export type Time = {
 
 // Define the Zod schema for personal best
 export const personalBestSchema = z.object({
+    id: z.number(),
     distance: z.object({
         value: z.number().int().positive(),
         unit: z.string(),

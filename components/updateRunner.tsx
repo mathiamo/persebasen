@@ -37,6 +37,7 @@ const UpdateRunner: React.FC<UpdateRunnerFormProps> = ({initialValues, onSubmitS
         const nextFreeDistance = defaultDistances.find((dist) => !usedDistanceValues.has(dist.value));
 
         append({
+            id: 0,
             distance: {
                 value: nextFreeDistance ? nextFreeDistance.value : 0,
                 unit: 'meters',
@@ -56,6 +57,7 @@ const UpdateRunner: React.FC<UpdateRunnerFormProps> = ({initialValues, onSubmitS
     const onSubmit: SubmitHandler<UpdateRunnerFormFields> = async (data) => {
         try {
             const pbs: PersonalBest[] = data.personalBests.map((pb) => ({
+                id: pb.id,
                 distance: {
                     value: pb.distance.value,
                     unit: pb.distance.unit,
