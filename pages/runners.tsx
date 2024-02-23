@@ -21,20 +21,20 @@ export default function Runners() {
         {field: '3000', headerName: '3000m', flex: 1, sortComparator: compareRunTime,},
         {field: '5000', headerName: '5000m', flex: 1, sortComparator: compareRunTime,},
         {field: '10000', headerName: '10000m', flex: 1, sortComparator: compareRunTime,},
-        {field: '21097', headerName: '21097m', flex: 1, sortComparator: compareRunTime,},
-        {field: '42195', headerName: '42195', width: 120, sortComparator: compareRunTime,},
+        {field: '21097', headerName: 'Halv', flex: 1, sortComparator: compareRunTime,},
+        {field: '42195', headerName: 'Hel', width: 120, sortComparator: compareRunTime,},
     ];
 
     const rows = runners?.map((runner: Runner) => ({
         id: runner.id,
         name: runner.name,
         age: runner.age,
-        "1500": runner.personalBests[0]?.timeString,
-        "3000": runner.personalBests[1]?.timeString,
-        "5000": runner.personalBests[2]?.timeString,
-        "10000": runner.personalBests[3]?.timeString,
-        "21097": runner.personalBests[4]?.timeString,
-        "42195": runner.personalBests[5]?.timeString
+        "1500": runner.personalBests.find(pb => pb.distance?.value === 1500)?.timeString,
+        "3000": runner.personalBests.find(pb => pb.distance?.value === 3000)?.timeString,
+        "5000": runner.personalBests.find(pb => pb.distance?.value === 5000)?.timeString,
+        "10000": runner.personalBests.find(pb => pb.distance?.value === 10000)?.timeString,
+        "21097": runner.personalBests.find(pb => pb.distance?.value === 21097)?.timeString,
+        "42195": runner.personalBests.find(pb => pb.distance?.value === 42195)?.timeString,
     })) ?? []
 
     if (isLoading) {

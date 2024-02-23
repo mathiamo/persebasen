@@ -74,7 +74,7 @@ export default function Home() {
             </Dialog>
             <Grid sx={{p: 2}} container spacing={2}>
                 {runners?.map((runner) => (
-                    <Grid item xs={12} md={6} lg={4} key={runner.id}>
+                    <Grid item xs={12} md={6} lg={4} key={runner.id} style={{marginBottom: '32px'}}>
                         <RunnerCard runner={runner} onDelete={() => removeRunnerMutation(runner.id)}
                                     onUpdate={() => {
                                         setInitialValues(runner);

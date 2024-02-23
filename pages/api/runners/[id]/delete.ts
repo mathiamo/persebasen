@@ -1,12 +1,11 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '../../../../lib/prisma';
 
-export default async function DELETE(request: NextApiRequest, res: NextApiResponse, {params}: {
+export default async function handler(request: NextApiRequest, res: NextApiResponse, {params}: {
     params: { id: string }
 }) {
     try {
-        const {id} = params;
-        console.log("###", id)
+        const id = params.id;
         const runnerWithAssociations = await prisma.runner.findUnique({
             where: {
                 id: Number(id),

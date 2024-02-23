@@ -72,18 +72,21 @@ export const changeRunner = async (updatedRunner: RunnerUpdate): Promise<Runner>
 };
 
 export const removeRunner = async (id: number): Promise<void> => {
-    console.log("Removing runner with id", id)
+    console.log("Removing runner with id", id);
+
     try {
-        const response = await axios.get(`${BASE_URL}/runners/${id}/delete`, {
-            method: "DELETE",
-        });
+        const response = await axios.delete(`${BASE_URL}/runners/${id}/delete`);
+
         if (response.status === 200) {
             const index = runners.findIndex((runner) => runner.id === id);
-            if (index !== -1) {
+
+            if (index !== -1 && runners) {
                 runners.splice(index, 1);
             } else {
                 console.error(`Runner with id ${id} not found in local array.`);
             }
+        } else {
+            console.error(`Failed to remove runner. Status: ${response.status}`);
         }
     } catch (error) {
         console.error("Error removing runner:", error);

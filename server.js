@@ -135,9 +135,10 @@ app.get('/runners/get', async (req, res) => {
     }
 });
 
-app.delete('/runners/delete/:id', async (req, res) => {
+app.delete('/runners/:id/delete', async (req, res) => {
     try {
         const runnerId = parseInt(req.params.id);
+        console.log('Received runner ID:', runnerId);
 
         // Find the runner along with their related personal bests, distances, and times
         const runnerWithAssociations = await prisma.runner.findUnique({
