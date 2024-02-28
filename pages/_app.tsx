@@ -9,14 +9,40 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import SimpleBottomNavigation from "../components/bottomnavigation";
 import React from "react";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {CssBaseline} from "@mui/material";
 
+// Define your custom theme
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#757ce8',
+            main: '#3f50b5',
+            dark: '#002884',
+            contrastText: '#fff',
+        },
+        secondary: {
+            light: '#ff7961',
+            main: '#f44336',
+            dark: '#ba000d',
+            contrastText: '#000',
+        },
+        background: {
+            default: '#f8f9fa', // Customize your background color
+        },
+    },
+});
 export default function App({Component, pageProps}: AppProps) {
     const queryClient = new QueryClient();
     return (
+
         <QueryClientProvider client={queryClient}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Component {...pageProps} />
-                <SimpleBottomNavigation/>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline/>
+                    <Component className="max-w-screen-xl mx-auto" {...pageProps} />
+                    <SimpleBottomNavigation/>
+                </ThemeProvider>
             </LocalizationProvider>
         </QueryClientProvider>
     )
