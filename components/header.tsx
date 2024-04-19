@@ -69,7 +69,7 @@ function Header() {
                             Persebasen
                         </Typography>
                         <>
-                            {!isAuthenticated ?
+                            {!user ?
                                 <>
                                     <LoginLink>Logg inn</LoginLink>
                                     <RegisterLink>Registrer bruker</RegisterLink>
