@@ -3,12 +3,15 @@ import styles from "./runnerCard.module.scss";
 import {PersonalBest, Runner} from "../models/runner";
 import {defaultDistances, getDistanceDisplayString} from "../utils/running.util";
 import {Fragment} from "react";
+import {useKindeAuth} from "@kinde-oss/kinde-auth-nextjs";
 
 export const RunnerCard = ({runner, onDelete, onUpdate}: {
     runner: Runner;
     onDelete: () => void;
     onUpdate: (runner: Runner) => void;
 }) => {
+    const {isAuthenticated} = useKindeAuth();
+
     function getPbTime(distance: number) {
         return runner.personalBests?.find(pb => pb.distance.value == distance)?.timeString ?? 'N/A';
     }
@@ -61,15 +64,18 @@ export const RunnerCard = ({runner, onDelete, onUpdate}: {
                         })}
                     </Grid>
                 }
-                <Grid container justifyContent="flex-end">
-                    <Button variant="contained" onClick={() => handleUpdate(runner)}
-                            style={{marginTop: '16px', marginRight: '16px'}}>
-                        Update
-                    </Button>
-                    <Button variant="contained" onClick={handleDelete} style={{marginTop: '16px'}}>
-                        Delete
-                    </Button>
-                </Grid>
+                {isAuthenticated &&
+                    <Grid container justifyContent="flex-end">
+                        <Button variant="contained" onClick={() => handleUpdate(runner)}
+                                style={{marginTop: '16px', marginRight: '16px'}}>
+                            Update
+                        </Button>
+                        <Button variant="contained" onClick={handleDelete} style={{marginTop: '16px'}}>
+                            Delete
+                        </Button>
+                    </Grid>
+                }
+
             </CardContent>
         </Card>
     );

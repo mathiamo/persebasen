@@ -4,34 +4,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import React, {useEffect, useState} from "react";
+import React from "react";
 import Box from "@mui/material/Box";
-import {getKindeServerSession, LogoutLink} from "@kinde-oss/kinde-auth-nextjs/server";
-import {KindeUser} from "@kinde-oss/kinde-auth-nextjs/types";
-import {LoginLink, RegisterLink} from "@kinde-oss/kinde-auth-nextjs";
+import {LogoutLink} from "@kinde-oss/kinde-auth-nextjs/server";
+import {LoginLink, RegisterLink, useKindeAuth} from "@kinde-oss/kinde-auth-nextjs";
 
 function Header() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<KindeUser | null>(null);
+    const {user, isAuthenticated} = useKindeAuth();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const {isAuthenticated, getUser} = getKindeServerSession();
-                const authStatus = await isAuthenticated();
-                setIsAuthenticated(authStatus);
-
-                if (authStatus) {
-                    const fetchedUser = await getUser();
-                    setUser(fetchedUser);
-                }
-            } catch (error) {
-                console.error('Error fetching user:', error);
-            }
-        };
-
-        fetchUser();
-    }, []);
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
@@ -69,7 +49,7 @@ function Header() {
                             Persebasen
                         </Typography>
                         <>
-                            {!user ?
+                            {!isAuthenticated ?
                                 <>
                                     <LoginLink>Logg inn</LoginLink>
                                     <RegisterLink>Registrer bruker</RegisterLink>
