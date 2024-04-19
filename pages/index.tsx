@@ -8,7 +8,7 @@ import {Add} from "@mui/icons-material";
 import EndreLoper from "./endreloper";
 import {Runner} from "../models/runner";
 
-export default async function Home() {
+export default function Home() {
     const queryCache = useQueryClient()
 
     const [search,] = useState("");
