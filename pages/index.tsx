@@ -8,8 +8,7 @@ import {Add} from "@mui/icons-material";
 import EndreLoper from "./endreloper";
 import {Runner} from "../models/runner";
 
-export default function Home() {
-
+export default async function Home() {
     const queryCache = useQueryClient()
 
     const [search,] = useState("");
@@ -44,7 +43,6 @@ export default function Home() {
                 .then(() => console.log("Invalidated query"));
         }
     });
-
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -84,6 +82,7 @@ export default function Home() {
                     </Grid>
                 ))}
             </Grid>
+
         </>
     )
 }

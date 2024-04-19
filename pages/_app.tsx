@@ -11,6 +11,7 @@ import SimpleBottomNavigation from "../components/bottomnavigation";
 import React from "react";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {CssBaseline} from "@mui/material";
+import {KindeProvider} from "@kinde-oss/kinde-auth-nextjs";
 
 // Define your custom theme
 const theme = createTheme({
@@ -35,15 +36,17 @@ const theme = createTheme({
 export default function App({Component, pageProps}: AppProps) {
     const queryClient = new QueryClient();
     return (
-
         <QueryClientProvider client={queryClient}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline/>
-                    <Component className="max-w-screen-xl mx-auto" {...pageProps} />
+                    <KindeProvider>
+                        <Component className="max-w-screen-xl mx-auto" {...pageProps} />
+                    </KindeProvider>
                     <SimpleBottomNavigation/>
                 </ThemeProvider>
             </LocalizationProvider>
         </QueryClientProvider>
+
     )
 }
