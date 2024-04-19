@@ -6,11 +6,10 @@ import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import React from "react";
 import Box from "@mui/material/Box";
-import {LogoutLink} from "@kinde-oss/kinde-auth-nextjs/server";
-import {LoginLink, RegisterLink, useKindeAuth} from "@kinde-oss/kinde-auth-nextjs";
+import {LoginLink, LogoutLink, RegisterLink, useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 
 function Header() {
-    const {user, isAuthenticated} = useKindeAuth();
+    const {user, isAuthenticated} = useKindeBrowserClient();
 
     return (
         <AppBar position="static">
